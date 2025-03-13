@@ -41,7 +41,13 @@ export default function Register() {
     setSubmitted(true);
     setError(null);
 
-    if (!enteredName || !enteredEmail || !enteredPassword || !confirmPassword) {
+    if (
+      !enteredName ||
+      !enteredEmail ||
+      !enteredPassword ||
+      !confirmPassword ||
+      !startingBalance
+    ) {
       setError("Please fill all fields");
       return;
     }
@@ -75,12 +81,20 @@ export default function Register() {
       <div className="w-full max-w-xl p-8 mx-auto rounded-lg shadow-lg bg-gradient-to-b from-[#474232] to-[#28271c] text-white">
         <div className="controls flex flex-col gap-2 mb-6">
           <p>
-            <label className="block mb-2 text-xs font-bold tracking-widest uppercase text-gray-200">
+            <label
+              className={`block mb-2 text-xs font-bold tracking-widest uppercase ${
+                submitted && !enteredName ? "text-red-400" : "text-gray-200"
+              }`}
+            >
               Name
             </label>
             <input
               type="text"
-              className="w-full p-3 bg-gray-300 text-gray-800 rounded-md shadow-md border-transparent"
+              className={`w-full p-3 bg-gray-300 text-gray-800 rounded-md shadow-md ${
+                submitted && !enteredName
+                  ? "border-2 border-red-500 bg-red-200"
+                  : "border-transparent"
+              }`}
               onChange={(event) =>
                 handleInputChange("name", event.target.value)
               }
@@ -155,12 +169,20 @@ export default function Register() {
           </p>
 
           <p>
-            <label className="block mb-2 text-xs font-bold tracking-widest uppercase text-gray-200">
+            <label
+              className={`block mb-2 text-xs font-bold tracking-widest uppercase ${
+                submitted && !startingBalance ? "text-red-400" : "text-gray-200"
+              }`}
+            >
               Starting Balance
             </label>
             <input
               type="number"
-              className="w-full p-3 bg-gray-300 text-gray-800 rounded-md shadow-md border-transparent"
+              className={`w-full p-3 bg-gray-300 text-gray-800 rounded-md shadow-md ${
+                submitted && !startingBalance
+                  ? "border-2 border-red-500 bg-red-200"
+                  : "border-transparent"
+              }`}
               onChange={(event) =>
                 handleInputChange("balance", event.target.value)
               }

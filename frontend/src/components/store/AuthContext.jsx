@@ -1,13 +1,32 @@
-import { createContext, useContext, useState } from "react";
+import axios from "axios";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import data from "../../data.js";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const [users, setUsers] = useState(data || []);
+  const [users, setUsers] = useState([]);
   const [user, setUser] = useState(null);
+  useEffect(() => {
+    fetch("http://localhost:5000/api/combined-users")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setUsers(data);
+        console.log(data);
+        // setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+        setError(error.message);
+        // setLoading(false);
+      });
+  }, []);
 
   const validateEmail = (email) => email.includes("@");
 
@@ -46,41 +65,38 @@ export function AuthProvider({ children }) {
     navigate("/login");
   };
 
-  const register = (newUser) => {
-    if (!newUser || !newUser.email || !newUser.password || !newUser.balance) {
+  const API_URL = "http://localhost:5000"; // Update with your backend URL
+
+  const register = async (newUser) => {
+    if (
+      !newUser ||
+      !newUser.name ||
+      !newUser.email ||
+      !newUser.password ||
+      !newUser.balance
+    ) {
       return { error: "Please fill all fields including balance." };
     }
 
-    const existingUser = users.find((user) => user.email === newUser.email);
+    try {
+      const response = await axios.post(`${API_URL}/register`, {
+        name: newUser.name,
+        email: newUser.email,
+        password: newUser.password,
+        balance: newUser.balance,
+      });
 
-    if (existingUser) {
-      return { error: "User already exists with this email." };
+      if (response.status === 201) {
+        console.log("User registered successfully:", response.data);
+        return { success: true, user: response.data };
+      }
+    } catch (error) {
+      console.error(
+        "Registration error:",
+        error.response?.data || error.message
+      );
+      return { error: error.response?.data?.error || "Registration failed" };
     }
-
-    // Create the new user with an initial transaction
-    const registeredUser = {
-      id: crypto.randomUUID(),
-      name: newUser.name,
-      email: newUser.email,
-      password: newUser.password,
-      role: "user",
-      transactions: [
-        {
-          type: "withdraw",
-          amt: 0,
-          balance: newUser.balance,
-        },
-      ],
-    };
-    console.log(registeredUser);
-
-    // Add the new user to the array
-    users.push(registeredUser);
-
-    // Save the user to localStorage or your backend (if needed)
-    localStorage.setItem("users", JSON.stringify(users));
-
-    return { success: true, user: registeredUser };
   };
 
   const deposit = (amount) => {

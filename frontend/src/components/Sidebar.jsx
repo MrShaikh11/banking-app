@@ -23,7 +23,7 @@ export default function Sidebar({ user }) {
         </h2>
 
         <div>
-          <Button>+ Add Project</Button>
+          <h2 className="text-center">Recent Transactions</h2>
         </div>
 
         <ul className="mt-8">
