@@ -196,7 +196,7 @@ export default function Register() {
           <button
             type="button"
             className="text-button ml-3 text-stone-100 hover:cursor-pointer hover:text-yellow-300"
-            onClick={() => navigate("/admin")}
+            onClick={() => navigate("/admin-login")}
           >
             Admin?
           </button>
