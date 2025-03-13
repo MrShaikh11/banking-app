@@ -8,23 +8,16 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState(null);
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/combined-users")
+    axios
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/combined-users`)
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setUsers(data);
-        console.log(data);
-        // setLoading(false);
+        setUsers(response.data);
+        console.log(response.data);
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
-        setError(error.message);
-        // setLoading(false);
       });
   }, []);
 
